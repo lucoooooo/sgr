@@ -1,3 +1,11 @@
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S),Linux)
+    PKG_CONFIG_PATH := /usr/lib/pkgconfig
+else ifeq ($(UNAME_S),Darwin)
+    PKG_CONFIG_PATH := /opt/homebrew/lib/pkgconfig
+endif
+
 # Prova a prendere flags da pkg-config per ndpi
 NDPI_CFLAGS := $(shell pkg-config --cflags libndpi 2>/dev/null)
 NDPI_LIBS := $(shell pkg-config --libs libndpi 2>/dev/null)
