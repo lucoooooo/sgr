@@ -369,7 +369,7 @@ void* polling_thread(void* arg) {
         // recupero bytes in uscita dalle interfacce
         getIfOutBytes(info->ss,info->nIf,ifOutB, &snmp_ack);
         if(!snmp_ack){
-            //senza gestione autonoma del wrap togliere parte dentro all'if e lasciare --> update_rrd(info->base_dir, info->nIf, ifOutB);
+            //senza gestione autonoma del wrap togliere parte dentro all'if e lasciare--> update_rrd(info->base_dir, info->nIf, ifOutB);
             if(first){
                 update_rrd(info->base_dir, info->nIf, ifOutB);
                 memcpy(prev_ifOutB, ifOutB, sizeof(prev_ifOutB));
