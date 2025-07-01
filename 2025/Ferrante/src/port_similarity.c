@@ -304,7 +304,7 @@ void init_rrd(char* name, u_int step, u_int nIf, agent_info *info){
         argv[2]="--step";
         snprintf(buffer, sizeof(buffer), "%d", step);
         argv[3]=strdup(buffer);
-        snprintf(buffer,sizeof(buffer), "DS:bytes_out_if%d:COUNTER:600:0:U", count);
+        snprintf(buffer,sizeof(buffer), "DS:bytes_out_if%d:GAUGE:600:0:U", count);
         argv[4]=strdup(buffer);
         argv[5]="RRA:AVERAGE:0.5:1:576";
         SYSCZ(rrd_create(argc, argv), "Error creating rrds");
