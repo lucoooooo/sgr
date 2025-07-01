@@ -177,7 +177,7 @@ void find_rrds(char *basedir, rrd_file_stats *rrds, u_int *num_rrds) {
             char path[PATH_MAX];
             struct stat s;
 
-            ndpi_snprintf(path, sizeof(path), "%s%s", basedir, namelist[n]->d_name);
+            snprintf(path, sizeof(path), "%s%s", basedir, namelist[n]->d_name);
 
             if(stat(path, &s) == 0) {
                 if(S_ISREG(s.st_mode) && endsWith(namelist[n]->d_name, ".rrd")){
@@ -228,7 +228,7 @@ int getNumIf(struct snmp_session *ss){
     struct snmp_pdu *response;
     oid anOID[MAX_OID_LEN];
     size_t anOID_len = MAX_OID_LEN;
-    int status;
+    int status, nIf=0;
 
     pdu = snmp_pdu_create(SNMP_MSG_GET);
     if (!read_objid("1.3.6.1.2.1.2.1.0", anOID, &anOID_len)) { //ifNumber del gruppo interface
@@ -238,9 +238,10 @@ int getNumIf(struct snmp_session *ss){
     snmp_add_null_var(pdu, anOID, anOID_len);
     status = snmp_synch_response(ss, pdu, &response);
     if(status == STAT_SUCCESS && response->errstat==SNMP_ERR_NOERROR){
-        return (int)*(response->variables->val.integer);
+        nIf = (int)*(response->variables->val.integer);
     }
     if (response) snmp_free_pdu(response);
+    return nIf;
 }
 
 /* *************************************************** */
@@ -510,6 +511,7 @@ int main(int argc, char *argv[]) {
         // recupero il numero di interfacce dell'agent
         SYSCN(info->rrds, ndpi_calloc(sizeof(rrd_file_stats), MAX_NUM_RRDS), "Not enough memory! \n");
         info->nIf = getNumIf(info->ss);
+        printf("%d\n", info->nIf);
         char base_dir[64];
         snprintf(base_dir, sizeof(base_dir), "%s/%s", RRD_FILES, hostname);
         info->base_dir = strdup(base_dir);
