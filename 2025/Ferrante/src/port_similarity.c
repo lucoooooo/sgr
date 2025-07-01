@@ -264,6 +264,7 @@ void getIfOutBytes(struct snmp_session *ss, u_int nIf, unsigned int* ifOutB, int
     snmp_add_null_var(pdu, anOID, anOID_len);
 
     status = snmp_synch_response(ss, pdu, &response);
+    //debug
     if (status != STAT_SUCCESS) {
         if (status == STAT_TIMEOUT) {
             printf("[ERROR] Timeout contattando host %s\n", ss->peername);
@@ -304,7 +305,7 @@ void init_rrd(char* name, u_int step, u_int nIf, agent_info *info){
         argv[2]="--step";
         snprintf(buffer, sizeof(buffer), "%d", step);
         argv[3]=strdup(buffer);
-        snprintf(buffer,sizeof(buffer), "DS:bytes_out_if%d:GAUGE:600:0:U", count);
+        snprintf(buffer,sizeof(buffer), "DS:bytes_out_if%d:GAUGE:600:0:U", count); //se non gestivo autonomamente wrap lo facevo gestire a rrd mettendo counter
         argv[4]=strdup(buffer);
         argv[5]="RRA:AVERAGE:0.5:1:576";
         SYSCZ(rrd_create(argc, argv), "Error creating rrds");
@@ -368,6 +369,7 @@ void* polling_thread(void* arg) {
         // recupero bytes in uscita dalle interfacce
         getIfOutBytes(info->ss,info->nIf,ifOutB, &snmp_ack);
         if(!snmp_ack){
+            //senza gestione autonoma del wrap togliere parte dentro all'if e lasciare --> update_rrd(info->base_dir, info->nIf, ifOutB);
             if(first){
                 update_rrd(info->base_dir, info->nIf, ifOutB);
                 memcpy(prev_ifOutB, ifOutB, sizeof(prev_ifOutB));
